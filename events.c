@@ -10,7 +10,7 @@ void events_books(int id)
 {
 	puts("You found a strange spellbook\n"
 		"Do you read it or leave it? (read/leave)");
-	while(!choice(3,"investigate","read","leave"))
+	while(!get_player_input(3,"investigate\n","read\n","leave\n"))
 		if(investigate)
 		{
 			puts("You look at the cover.\n"
@@ -68,7 +68,7 @@ void events_potions(int id)
 {
 	puts("You found a strange potion!\n"
 		"Do you drink it or leave it? (drink/leave)");
-	while(!choice(3,"investigate","drink","leave"))
+	while(!get_player_input(3,"investigate\n","drink\n","leave\n"))
 		if(investigate)
 		{
 			puts("You look at the label.\n"
@@ -136,7 +136,7 @@ void events_chests(int id)
 {
 	puts("You found a strange chest!\n"
 		"Do you open it or leave it? (open/leave)");
-	while(!choice(3,"investigate","open","leave"))
+	while(!get_player_input(3,"investigate\n","open\n","leave\n"))
 		if(investigate)
 		{
 			puts("You take a closer look at it.\n"
@@ -198,7 +198,7 @@ void event_42(int id)
 		"It asks you a single question:\n"
 		"What is the Answer to the Ultimate Question\n" 
 		"of Life, The Universe, and Everything?");
-	while(!choice(8,"investigate\n","42\n","attack\n","fight\n","ignite\n","ignition\n","spell\n","igni")) /*An average player should figure one of those, Also, short input will not work correctly.*/
+	while(!get_player_input(8,"investigate\n","42\n","attack\n","fight\n","ignite\n","ignition\n","spell\n","igni")) /*An average player should figure one of those, Also, short input will not work correctly.*/
 		if(investigate)
 			puts("If you don't know the answer you may take a different approach");
 		else

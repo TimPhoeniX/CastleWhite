@@ -26,7 +26,7 @@ typedef struct map_t
 	int chamber[MAP_SIZE][MAP_SIZE];
 } map_t;
 
-int choice(int n, ...);
+int get_player_input(int n, ...);
 
 enum direction_t get_dir(void);
 

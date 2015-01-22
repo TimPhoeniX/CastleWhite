@@ -7,6 +7,7 @@
 #include<unistd.h>
 #include "mybanner.h"
 #include "castle.h" /*prototypes, types and macros*/
+#include "events.h"
 	
 int debug=0,DarkSoulsMode=0,input=0,investigate=0;
 player_t player={0};
@@ -71,7 +72,7 @@ void print_map_debug(void)
 	}
 	fclose(fmap);
 }	
-int choice(int number, ...)
+int get_player_input(int number, ...)
 {
 	va_list opts;
 	int i=0;
@@ -98,7 +99,7 @@ void Continue(void)
 {
 	if(!player.playing) return;
 	puts("Continue? (yes/no)");
-	while(!choice(3,"","no\n","yes\n")) puts("(yes/no)");
+	while(!get_player_input(3,"","no\n","yes\n")) puts("(yes/no)");
 	if(input==1) player.playing=0;
 }
 void death(void)
@@ -294,7 +295,7 @@ void debugger(void)
 	int event_id=0;
 	char player_input[64]={0};
 	puts("debug (map/events/banner)");
-	while(!choice(4,"","events\n","map\n","banner\n")) puts("(map/events/banner)");
+	while(!get_player_input(4,"","events\n","map\n","banner\n")) puts("(map/events/banner)");
 	switch(input)
 	{
 	case 1:
@@ -334,7 +335,7 @@ void get_castle(void)
 	{
 		puts("Your castle appears to be uninitialized"); sleep(1);
 		puts("Would you like to initialize it? (yes/no)");
-		while(!choice(3,"investigate\n","yes\n","no\n"))
+		while(!get_player_input(3,"investigate\n","yes\n","no\n"))
 			if(investigate) 
 				puts("You need to initialize your castle\n"
 					"before you can explore it\n"
@@ -345,7 +346,7 @@ void get_castle(void)
 		{
 			puts("Your refusal to initialize the Castle White had angered the gods."); sleep(1);
 			puts("Do you want to apologize them? (yes/no)");
-			while(!choice(3,"investigate\n","yes\n","no\n")) 
+			while(!get_player_input(3,"investigate\n","yes\n","no\n")) 
 				if(investigate) puts("You better apologize the gods or something bad will happen\n"
 							"Do you want to apologize them? (yes/no)");
 				else puts("Do you want to apologize them? (yes/no)");
