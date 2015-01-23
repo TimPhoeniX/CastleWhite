@@ -230,7 +230,7 @@ void events_main_switch(int id)
 			puts("You've been here already");
 			break;
 		case 1:
-			victory();
+			event_victory();
 			break;
 		case 2: case 3: case 4: case 5: case 6: /* -pedantic warns about case ranges GCC extension so can't do case 2 ... 6: */
 			puts("You encounter a strange anomaly. It's a tornado!");

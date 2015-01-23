@@ -7,39 +7,61 @@
 #include<unistd.h>
 #include "mybanner.h"
 #include "castle.h" /*prototypes, types and macros*/
-#include "events.h"
 	
 int debug=0,DarkSoulsMode=0,input=0,investigate=0;
-player_t player={0};
-map_t castle_map={0};
+/*player_t player={0};
+map_t castle_map={0};*/
+/*Those two lines of code are much more clean and readable than those atrocities I am about to commit
+ * Unfortunately those atrocities will compile w/o warnings on older GCC versions*/
+player_t player={0,0,0,0,0,0,0,0,0};
+map_t castle_map=
+	{
+		0,
+		"",
+		{
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+		}
+	};
 
-void goodbye(void)
+void say_goodbye_at_exit(void)/*Use with atexit()*/
 {
 	puts("Have a nice day");
 }
-void initialize(void)
+void initialize_new_game_state(void)
 {
 	system("clear");
 	memset(&castle_map,0,sizeof(map_t));
 	memset(&player,0,sizeof(player_t));
-	player.max_health=(DarkSoulsMode?2:10); /*1 was way too low*/
+	player.max_health=(DarkSoulsMode?2:10);/*1 was way too low*/
 	player.health=player.max_health;
 	player.playing=1;
-	puts("Welcome to Castle White."); sleep(1);
+	puts("Welcome to Castle White.");
+	sleep(1);
 }
 void print_map(void)
 {
 	FILE *fmap;
 	int x=0,y=0;
 	time_t time_buffer;
-	if(!castle_map.ID) return;
+	if(!castle_map.ID)
+		return;
 	time(&time_buffer);
-	fmap=fopen(castle_map.name,"a"); 
+	fmap=fopen(castle_map.name,"a");
 	fprintf(fmap,"Map id=%u, %s\n",castle_map.ID,ctime(&time_buffer));
 	fprintf(fmap,"  #####################\n");
 	for(y=MAP_SIZE-1;y>=0;y--)
 	{
-		if(y<MAP_SIZE-1) fprintf(fmap,"  # # # # # # # # # # #\n");
+		if(y<MAP_SIZE-1)
+			fprintf(fmap,"  # # # # # # # # # # #\n");
 		fprintf(fmap,"%2d",y+1);
 		for(x=0;x<MAP_SIZE;x++)
 		{
@@ -48,7 +70,8 @@ void print_map(void)
 		fprintf(fmap,"#\n");
 	}
 	fprintf(fmap,"  #####################\n  ");
-	for(x=1;x<=MAP_SIZE;x++) fprintf(fmap,"|%d",x);
+	for(x=1;x<=MAP_SIZE;x++)
+		fprintf(fmap,"|%d",x);
 	fprintf(fmap,"\nRooms you've explored:+, Treasure:X\n");
 	fclose(fmap);
 }
@@ -60,7 +83,7 @@ void print_map_debug(void)
 	time_t time_buffer;
 	time(&time_buffer);
 	sprintf(debug_filename,"d_%s",castle_map.name);
-	fmap=fopen(debug_filename,"w"); 
+	fmap=fopen(debug_filename,"w");
 	fprintf(fmap,"Map id=%u, %s\n",castle_map.ID,ctime(&time_buffer));
 	for(y=MAP_SIZE-1;y>=0;y--)
 	{
@@ -87,20 +110,25 @@ int get_player_input(int number, ...)
 		short_input[0]=input_string[0];
 		if(!strcmp(player_input,input_string) || !strcmp(player_input,short_input))
 		{	
-			if(!i) investigate=1;
-			else input=i;
+			if(!i)
+				investigate=1;
+			else
+				input=i;
 			break;
 		}
 	}
 	va_end(opts);
 	return input;
 }
-void Continue(void)
+void ask_player_if_continues_playing(void)
 {
-	if(!player.playing) return;
+	if(!player.playing)
+		return;
 	puts("Continue? (yes/no)");
-	while(!get_player_input(3,"","no\n","yes\n")) puts("(yes/no)");
-	if(input==1) player.playing=0;
+	while(!get_player_input(3,"","no\n","yes\n"))
+		puts("(yes/no)");
+	if(input==1)
+		player.playing=0;
 }
 void death(void)
 {
@@ -113,11 +141,12 @@ void hit_player(int damage)
 	{
 			player.health-=damage;
 			sleep(1);
-			if(player.health<=0) death();
+			if(player.health<=0)
+				death();
 	}
 	else
 		puts("As an immortal you are unharmed");
-} 
+}
 void heal_player(int life)
 {
 	player.health+=life;
@@ -178,7 +207,7 @@ void move_player(enum direction_t direction)
 			{
 				puts("You hit the wall");
 				hit_player(1);
-			} 
+			}
 			else
 			{
 				player.y++;
@@ -193,7 +222,7 @@ void move_player(enum direction_t direction)
 			}
 			else 
 			{
-				player.y--; 
+				player.y--;
 				player.moved=1;	
 			}
 			break;
@@ -242,15 +271,16 @@ void teleport_player(void)
 	player.x=rand()%MAP_SIZE;
 	player.y=rand()%MAP_SIZE;
 }
-void player_was_here(void) /* Marks current chamber as visited */
+void player_was_here(void)/* Marks current chamber as visited */
 {
 	castle_map.chamber[player.x][player.y]=0;
 }
-void victory(void)
+void event_victory(void)
 {
 	puts("You've found the treasure!");
 	advanced_banner("Congratulations!");
-	player.won=1; sleep(1);
+	player.won=1;
+	sleep(1);
 	puts("Thank you for playing.\n"
 		"As a reward, I will tell you a secret.\n"
 		"Use 'investigate' to get more information about your surrounding.\n"
@@ -268,7 +298,8 @@ void get_ID(void)
 	{
 		fgets(player_input,sizeof(player_input),stdin);
 		sscanf(player_input,"%u",&castle_map.ID);
-		if(!castle_map.ID) puts("Try again");
+		if(!castle_map.ID)
+			puts("Try again");
 	}
 	sprintf(castle_map.name,"map%u.txt",castle_map.ID);
 }
@@ -295,13 +326,15 @@ void debugger(void)
 	int event_id=0;
 	char player_input[64]={0};
 	puts("debug (map/events/banner)");
-	while(!get_player_input(4,"","events\n","map\n","banner\n")) puts("(map/events/banner)");
+	while(!get_player_input(4,"","events\n","map\n","banner\n"))
+		puts("(map/events/banner)");
 	switch(input)
 	{
 	case 1:
 		while(event_id>=0)
 		{
-			if(player.health<=0) initialize();
+			if(player.health<=0)
+				initialize_new_game_state();
 			printf("Test events 0-%d, negative to quit\n",EV_LIM);
 			fgets(player_input,sizeof(player_input),stdin);
 			sscanf(player_input,"%d",&event_id);
@@ -319,55 +352,67 @@ void debugger(void)
 		break;
 	}
 	player.playing=0;
-} /*End of debugger*/
+}/*End of debugger*/
 void parse_commands(int argc, char *argv[])
 {
 	int i=0;
-	if(argc>1) for(i=1;i<argc;i++)
-	{
-		if(!strcmp(argv[i],"-DarkSoulsMode")) DarkSoulsMode=1;
-		else if(!strcmp(argv[i],"-debug")) debug=1;
-	}
+	if(argc>1)
+		for(i=1;i<argc;i++)
+		{
+			if(!strcmp(argv[i],"-DarkSoulsMode"))
+				DarkSoulsMode=1;
+			else if(!strcmp(argv[i],"-debug"))
+				debug=1;
+		}
 }
 void get_castle(void)
 {
 	while(player.playing)
 	{
-		puts("Your castle appears to be uninitialized"); sleep(1);
+		puts("Your castle appears to be uninitialized");
+		sleep(1);
 		puts("Would you like to initialize it? (yes/no)");
 		while(!get_player_input(3,"investigate\n","yes\n","no\n"))
-			if(investigate) 
+			if(investigate)
 				puts("You need to initialize your castle\n"
 					"before you can explore it\n"
 					"Would you like to initialize it? (yes/no)");
 			else puts("(yes/no)");
-		if(input==1) break;
+		if(input==1)
+			break;
 		else
 		{
-			puts("Your refusal to initialize the Castle White had angered the gods."); sleep(1);
+			puts("Your refusal to initialize the Castle White had angered the gods.");
+			sleep(1);
 			puts("Do you want to apologize them? (yes/no)");
-			while(!get_player_input(3,"investigate\n","yes\n","no\n")) 
-				if(investigate) puts("You better apologize the gods or something bad will happen\n"
-							"Do you want to apologize them? (yes/no)");
-				else puts("Do you want to apologize them? (yes/no)");
-			if(input==1) puts("Gods have accepted the apology.");
+			while(!get_player_input(3,"investigate\n","yes\n","no\n"))
+				if(investigate)
+					puts("You better apologize the gods or something bad will happen\n"
+						"Do you want to apologize them? (yes/no)");
+				else
+					puts("Do you want to apologize them? (yes/no)");
+			if(input==1)
+				puts("Gods have accepted the apology.");
 			else
 			{
 				puts("You have been struck by a lighting.");
 				hit_player(player.health);
 			}
 		}
-		if(player.died) return;
+		if(player.died)
+			return;
 	}
 	get_ID();
-	if(player.died) return;
+	if(player.died)
+		return;
 	generate_map();
 	puts("You stand in awe as your castle rises from the ground");
-} /*End of get_castle*/
+}/*End of get_castle*/
 void get_inside_castle(void)
 {
 	teleport_player();
-	printf("You have been teleported into the castle\nat [%d,%d] coordinates\n",player.x+1,player.y+1); sleep(1);
+	printf("You have been teleported into the castle\nat [%d,%d] coordinates\n",player.x+1,player.y+1);
+	sleep(1);
 	puts("Your castle apears to have a treasure inside!\n"
 		"Would you kindly find it?\n");
 	sleep(1);
@@ -381,7 +426,8 @@ void play(void)
 		{
 			sleep(1);
 			move_player(get_dir());
-			if(player.died) return;
+			if(player.died)
+				return;
 		}
 		system("clear");
 		events_main_switch(castle_map.chamber[player.x][player.y]);
@@ -389,13 +435,14 @@ void play(void)
 }
 int main(int argc, char *argv[])
 {
-	atexit(goodbye);
+	atexit(say_goodbye_at_exit);
 	parse_commands(argc,argv);
-	if(debug) debugger();
+	if(debug)
+		debugger();
 	else player.playing=1;
 	while(player.playing)
 	{
-		initialize();
+		initialize_new_game_state();
 		get_castle();
 		if(!player.died && !player.won)
 		{
@@ -403,7 +450,7 @@ int main(int argc, char *argv[])
 			get_inside_castle();
 			play();
 		}
-		Continue();
+		ask_player_if_continues_playing();
 	}
 	return 0;
 }
