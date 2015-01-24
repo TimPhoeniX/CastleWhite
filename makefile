@@ -1,8 +1,9 @@
+# If you are receiving warnings, please update your GCC
 CC=gcc
 FLAGS=-Wall -Wextra -pedantic
 
 .PHONY: all
-all: CastleWhite.exe clean
+all: CastleWhite.exe
 
 CastleWhite.exe: castle.o events.o mybanner.o charset.o
 	$(CC) $(FLAGS) $^ -o $@
@@ -34,8 +35,5 @@ debug: CastleWhite.exe
 	./$< -debug
 	
 .PHONY: delete
-delete:
-	@rm -rf *~
-	@rm -rf *.o
-	@rm -rf *.txt
+delete: clean
 	@rm -rf *.exe

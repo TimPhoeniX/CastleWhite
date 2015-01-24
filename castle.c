@@ -41,9 +41,11 @@ void initialize_new_game_state(void)
 	system("clear");
 	memset(&castle_map,0,sizeof(map_t));
 	memset(&player,0,sizeof(player_t));
+
 	player.max_health=(DarkSoulsMode?2:10);/*1 was way too low*/
 	player.health=player.max_health;
 	player.playing=1;
+
 	puts("Welcome to Castle White.");
 	sleep(1);
 }
@@ -52,6 +54,7 @@ void print_map(void)
 	FILE *fmap;
 	int x=0,y=0;
 	time_t time_buffer;
+
 	if(!castle_map.ID)
 		return;
 	time(&time_buffer);
@@ -81,6 +84,7 @@ void print_map_debug(void)
 	char debug_filename[21];
 	int x=0,y=0;
 	time_t time_buffer;
+
 	time(&time_buffer);
 	sprintf(debug_filename,"d_%s",castle_map.name);
 	fmap=fopen(debug_filename,"w");
@@ -99,7 +103,8 @@ int get_player_input(int number, ...)
 {
 	va_list opts;
 	int i=0;
-	char player_input[64]={0},input_string[32]={0}, short_input[3]=" \n\0";/*Possible Segfaults here, 32 should be enough.*/
+	char player_input[64]="",input_string[32]="", short_input[3]=" \n\0";/*Possible Segfaults here, 32 should be enough.*/
+
 	va_start(opts,number);
 	input=0;
 	investigate=0;
@@ -124,7 +129,7 @@ void ask_player_if_continues_playing(void)
 {
 	if(!player.playing)
 		return;
-	puts("Continue? (yes/no)");
+	puts("Continue playing? (yes/no)");
 	while(!get_player_input(3,"","no\n","yes\n"))
 		puts("(yes/no)");
 	if(input==1)
@@ -155,7 +160,8 @@ void heal_player(int life)
 enum direction_t get_dir(void)
 {
 	enum direction_t dir=UNKNOWN;
-	char player_input[64]={0};
+	char player_input[64]="";
+	
 	while(1)
 	{
 		puts("#####\nWhere do you want to go\n(north/south/east/west)(suicide to quit)");
@@ -291,7 +297,7 @@ void event_victory(void)
 }
 void get_ID(void)
 {
-	char player_input[64]={0};
+	char player_input[64]="";
 	puts("Please, Initialize your castle by entering");
 	printf("A number ranging from 1 to %u\n",UINT_MAX);
 	while(!castle_map.ID)
@@ -324,7 +330,7 @@ void debug_map(void)
 void debugger(void)
 {
 	int event_id=0;
-	char player_input[64]={0};
+	char player_input[64]="";
 	puts("debug (map/events/banner)");
 	while(!get_player_input(4,"","events\n","map\n","banner\n"))
 		puts("(map/events/banner)");

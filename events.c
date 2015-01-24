@@ -48,7 +48,7 @@ void events_books(int id)
 				break;
 			case 3:
 				puts("You pick up the book and start reading.");
-				if(player.health>10)
+				if(player.health>10 && !player.immortal)
 				{
 					player.immortal=1;
 					puts("You sense some strange energy invigorating your body.\n"
@@ -194,15 +194,31 @@ void events_chests(int id)
 } /*End of events_chests*/
 void event_42(int id)
 {
+	int countdown_to_death_by_mouse=3;
 	puts("You encounter a talking mouse.\n"
 		"It asks you a single question:\n"
 		"What is the Answer to the Ultimate Question\n" 
 		"of Life, The Universe, and Everything?");
-	while(!get_player_input(8,"investigate\n","42\n","attack\n","fight\n","ignite\n","ignition\n","spell\n","igni")) /*An average player should figure one of those, Also, short input will not work correctly.*/
+	while(!get_player_input(9,"investigate\n","42\n","towel\n","attack\n","fight\n","ignite\n","ignition\n","spell\n","igni\n")) /*An average player should figure one of those, Also, short input will not work correctly.*/
 		if(investigate)
 			puts("If you don't know the answer you may take a different approach");
-		else
+		else if(--countdown_to_death_by_mouse)
 			puts("That mouse is getting impatient");
+		else
+		{
+			puts("Chamber is suddenly filling with mice.\n"
+				"They all attack you.");
+			sleep(2);
+			advanced_banner("CENSORED");
+			sleep(2);
+			if(player.immortal)
+			{
+				puts("Not even your immortality can save you from this");
+				player.immortal=0;
+			}
+			hit_player(player.health);
+			return;
+		}	
 	if(input==1) 
 	{
 		advanced_banner("Correct!");
@@ -213,7 +229,13 @@ void event_42(int id)
 			heal_player(id%5);
 		}
 	}
-	else if(input>1)
+	else if(input==2)
+	{
+		puts("You conjure a towel and quickly smack the mouse with it.\n"
+			"It's flattened corpse disappears\n"
+			"You may carry on now.");
+	}
+	else if(input>2)
 	{
 		puts("You decide to quickly apply the ignition spell to the mouse.\n"
 			"Before you finish casting, it jumps at you and bites you");
