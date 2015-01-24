@@ -1,6 +1,6 @@
 # If you are receiving warnings, please update your GCC
 CC=gcc
-FLAGS=-Wall -Wextra -pedantic
+FLAGS=-Wall -Wextra -pedantic -std=c99
 
 .PHONY: all
 all: CastleWhite.exe
