@@ -1,2 +1,3 @@
-# CastleWhite
-Please, do not use without prior informing me about it.
+# Castle White
+
+Simple adventure game written in C
